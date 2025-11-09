@@ -2,12 +2,9 @@ import { useState } from "react";
 import { LearningMapGenerator } from "@/components/LearningMapGenerator";
 import { LearningMapVisualization } from "@/components/LearningMapVisualization";
 import { Brain, Sparkles } from "lucide-react";
-
 const Index = () => {
   const [learningMapData, setLearningMapData] = useState<any>(null);
-
-  return (
-    <div className="min-h-screen bg-gradient-subtle">
+  return <div className="min-h-screen bg-gradient-subtle">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
@@ -15,7 +12,7 @@ const Index = () => {
               <Brain className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">AI Learning Map Generator</h1>
+              <h1 className="text-2xl font-bold text-foreground">Learner's Map </h1>
               <p className="text-sm text-muted-foreground">Transform any topic into a visual learning journey</p>
             </div>
           </div>
@@ -45,8 +42,7 @@ const Index = () => {
           <LearningMapGenerator onMapGenerated={setLearningMapData} />
         </div>
 
-        {learningMapData && (
-          <div className="max-w-6xl mx-auto space-y-4 animate-in fade-in duration-500">
+        {learningMapData && <div className="max-w-6xl mx-auto space-y-4 animate-in fade-in duration-500">
             <div className="text-center space-y-2">
               <h3 className="text-2xl font-bold text-foreground">
                 Your Learning Map: {learningMapData.topic}
@@ -54,38 +50,29 @@ const Index = () => {
               <p className="text-muted-foreground">{learningMapData.description}</p>
             </div>
             <LearningMapVisualization data={learningMapData} />
-          </div>
-        )}
+          </div>}
 
-        {!learningMapData && (
-          <div className="max-w-4xl mx-auto">
+        {!learningMapData && <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-3 gap-6 py-8">
-              {[
-                {
-                  title: "Structured Learning",
-                  description: "Break down complex topics into manageable, organized sections",
-                  icon: "📚"
-                },
-                {
-                  title: "Curated Resources",
-                  description: "Get relevant articles, videos, and courses for each learning node",
-                  icon: "🎯"
-                },
-                {
-                  title: "Visual Exploration",
-                  description: "Interact with your learning map, expand nodes, and discover connections",
-                  icon: "🔍"
-                }
-              ].map((feature, idx) => (
-                <div key={idx} className="p-6 bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
+              {[{
+            title: "Structured Learning",
+            description: "Break down complex topics into manageable, organized sections",
+            icon: "📚"
+          }, {
+            title: "Curated Resources",
+            description: "Get relevant articles, videos, and courses for each learning node",
+            icon: "🎯"
+          }, {
+            title: "Visual Exploration",
+            description: "Interact with your learning map, expand nodes, and discover connections",
+            icon: "🔍"
+          }].map((feature, idx) => <div key={idx} className="p-6 bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
                   <div className="text-4xl mb-3">{feature.icon}</div>
                   <h4 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h4>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
-                </div>
-              ))}
+                </div>)}
             </div>
-          </div>
-        )}
+          </div>}
       </main>
 
       <footer className="border-t border-border bg-card/50 mt-16">
@@ -93,8 +80,6 @@ const Index = () => {
           <p>AI Learning Map Generator - Turn curiosity into structured knowledge</p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
