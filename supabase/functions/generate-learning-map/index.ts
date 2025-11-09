@@ -19,17 +19,35 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert educational curriculum designer. Create a comprehensive learning map for the given topic.
-    
-The learning map should be structured as a hierarchical tree with:
-- A main topic node
-- 3-5 major learning areas (main branches)
-- 2-4 subtopics for each main area
-- For each node, include a brief description and 1-2 learning resources
+    const systemPrompt = `You are an expert curriculum designer specializing in technology roadmaps, inspired by roadmap.sh's comprehensive approach.
 
-Adjust the complexity based on the learning level: ${level || 'beginner'}
+Create a detailed, professional learning roadmap that follows these principles:
 
-Return the data in a structured format that can be visualized as a node graph.`;
+**Structure Requirements:**
+- Main topic with clear career/learning objective
+- 5-7 major learning areas (core pillars of the domain)
+- 3-5 subtopics per area, representing key skills/concepts
+- Each node should have practical, industry-relevant descriptions
+
+**Content Guidelines:**
+- Use industry-standard terminology and technologies
+- Include both foundational concepts and modern practices
+- Provide clear learning progression (what to learn first)
+- Mention specific tools, frameworks, and technologies by name
+- Resources should be authoritative (MDN, official docs, popular courses)
+
+**Learning Level Adjustments (${level || 'beginner'}):**
+- Beginner: Focus on fundamentals, basic concepts, getting started guides
+- Intermediate: Include frameworks, best practices, real-world applications
+- Advanced: Cover architecture, optimization, advanced patterns, system design
+
+**Style:**
+- Professional and comprehensive like roadmap.sh
+- Clear prerequisite relationships
+- Practical, career-focused content
+- Modern, up-to-date technologies
+
+Return structured data optimized for node graph visualization.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -62,19 +80,35 @@ Return the data in a structured format that can be visualized as a node graph.`;
                   },
                   mainAreas: {
                     type: "array",
+                    description: "5-7 major learning areas representing core pillars of the domain",
+                    minItems: 5,
+                    maxItems: 7,
                     items: {
                       type: "object",
                       properties: {
                         id: { type: "string" },
-                        title: { type: "string" },
-                        description: { type: "string" },
+                        title: { 
+                          type: "string",
+                          description: "Clear, professional title using industry terms"
+                        },
+                        description: { 
+                          type: "string",
+                          description: "Comprehensive explanation of why this area matters and what you'll achieve"
+                        },
+                        category: {
+                          type: "string",
+                          enum: ["fundamental", "core-skill", "advanced", "tools", "practices"],
+                          description: "Classification of this learning area"
+                        },
                         resources: {
                           type: "array",
+                          minItems: 2,
+                          maxItems: 3,
                           items: {
                             type: "object",
                             properties: {
                               title: { type: "string" },
-                              type: { type: "string", enum: ["article", "video", "book", "course"] },
+                              type: { type: "string", enum: ["article", "video", "book", "course", "documentation"] },
                               url: { type: "string" }
                             },
                             required: ["title", "type"]
@@ -82,30 +116,46 @@ Return the data in a structured format that can be visualized as a node graph.`;
                         },
                         subtopics: {
                           type: "array",
+                          description: "3-5 specific skills/concepts within this area",
+                          minItems: 3,
+                          maxItems: 5,
                           items: {
                             type: "object",
                             properties: {
                               id: { type: "string" },
-                              title: { type: "string" },
-                              description: { type: "string" },
+                              title: { 
+                                type: "string",
+                                description: "Specific technology, concept, or skill name"
+                              },
+                              description: { 
+                                type: "string",
+                                description: "What this is, why it's important, and how it fits in the learning path"
+                              },
+                              priority: {
+                                type: "string",
+                                enum: ["essential", "recommended", "optional"],
+                                description: "How critical this subtopic is to master"
+                              },
                               resources: {
                                 type: "array",
+                                minItems: 1,
+                                maxItems: 2,
                                 items: {
                                   type: "object",
                                   properties: {
                                     title: { type: "string" },
-                                    type: { type: "string", enum: ["article", "video", "book", "course"] },
+                                    type: { type: "string", enum: ["article", "video", "book", "course", "documentation"] },
                                     url: { type: "string" }
                                   },
                                   required: ["title", "type"]
                                 }
                               }
                             },
-                            required: ["id", "title", "description", "resources"]
+                            required: ["id", "title", "description", "priority", "resources"]
                           }
                         }
                       },
-                      required: ["id", "title", "description", "resources", "subtopics"]
+                      required: ["id", "title", "description", "category", "resources", "subtopics"]
                     }
                   }
                 },
