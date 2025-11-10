@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { LearningMapGenerator } from "@/components/LearningMapGenerator";
 import { LearningMapVisualization } from "@/components/LearningMapVisualization";
-import { Brain, Sparkles } from "lucide-react";
+import { LearningMapCards } from "@/components/LearningMapCards";
+import { Brain, Sparkles, LayoutGrid, Network } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const Index = () => {
   const [learningMapData, setLearningMapData] = useState<any>(null);
   return <div className="min-h-screen bg-gradient-subtle">
@@ -42,14 +45,36 @@ const Index = () => {
           <LearningMapGenerator onMapGenerated={setLearningMapData} />
         </div>
 
-        {learningMapData && <div className="max-w-6xl mx-auto space-y-4 animate-in fade-in duration-500">
-            <div className="text-center space-y-2">
-              <h3 className="text-2xl font-bold text-foreground">
+        {learningMapData && <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
+            <div className="text-center space-y-3">
+              <h3 className="text-3xl font-bold text-foreground bg-gradient-primary bg-clip-text text-transparent">
                 Your Learning Map: {learningMapData.topic}
               </h3>
-              <p className="text-muted-foreground">{learningMapData.description}</p>
+              <p className="text-muted-foreground text-lg max-w-3xl mx-auto">{learningMapData.description}</p>
             </div>
-            <LearningMapVisualization data={learningMapData} />
+
+            <Tabs defaultValue="visualization" className="w-full">
+              <div className="flex justify-center mb-6">
+                <TabsList className="grid w-full max-w-md grid-cols-2 bg-card border border-border shadow-sm">
+                  <TabsTrigger value="visualization" className="gap-2">
+                    <Network className="w-4 h-4" />
+                    Visual Map
+                  </TabsTrigger>
+                  <TabsTrigger value="cards" className="gap-2">
+                    <LayoutGrid className="w-4 h-4" />
+                    Card View
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="visualization" className="mt-0">
+                <LearningMapVisualization data={learningMapData} />
+              </TabsContent>
+
+              <TabsContent value="cards" className="mt-0">
+                <LearningMapCards data={learningMapData} />
+              </TabsContent>
+            </Tabs>
           </div>}
 
         {!learningMapData && <div className="max-w-4xl mx-auto">

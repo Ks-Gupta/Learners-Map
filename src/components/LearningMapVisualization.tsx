@@ -44,6 +44,7 @@ interface LearningMapVisualizationProps {
 
 const CustomNode = ({ data }: any) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const getCategoryColor = (category?: string) => {
     switch (category) {
@@ -71,13 +72,17 @@ const CustomNode = ({ data }: any) => {
 
   return (
     <Card 
-      className="p-4 min-w-[220px] max-w-[300px] cursor-pointer transition-all hover:shadow-lg hover:scale-105"
+      className="p-4 min-w-[220px] max-w-[300px] cursor-pointer transition-all duration-300"
       onClick={() => setShowDetails(!showDetails)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{
         backgroundColor: mainColor,
         color: data.level === 'root' || data.level === 'main' ? 'white' : 'hsl(var(--card-foreground))',
         border: '2px solid',
         borderColor: mainColor,
+        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+        boxShadow: isHovered ? '0 20px 40px -10px rgba(0,0,0,0.3)' : '0 4px 6px -1px rgba(0,0,0,0.1)',
       }}
     >
       <div className="space-y-1">
@@ -263,7 +268,7 @@ export const LearningMapVisualization = ({ data }: LearningMapVisualizationProps
   };
 
   return (
-    <Card className="h-[600px] relative overflow-hidden shadow-lg border-border">
+    <Card className="h-[700px] relative overflow-hidden shadow-elegant border-border bg-gradient-subtle">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -274,30 +279,41 @@ export const LearningMapVisualization = ({ data }: LearningMapVisualizationProps
         fitView
         minZoom={0.2}
         maxZoom={1.5}
+        className="bg-background/50"
       >
-        <Background />
-        <Controls />
-        <MiniMap />
-        <Panel position="top-right" className="bg-card p-2 rounded-lg shadow-md m-2">
+        <Background gap={16} size={1} color="hsl(var(--border))" />
+        <Controls className="bg-card border border-border rounded-lg shadow-md" />
+        <MiniMap 
+          className="bg-card border border-border rounded-lg shadow-md"
+          maskColor="hsl(var(--background) / 0.8)"
+          nodeColor={(node) => {
+            if (node.data.level === 'root') return 'hsl(var(--primary))';
+            if (node.data.level === 'main') return 'hsl(var(--accent))';
+            return 'hsl(var(--muted))';
+          }}
+        />
+        <Panel position="top-right" className="bg-card/95 backdrop-blur-sm p-3 rounded-lg shadow-elegant border border-border m-2">
           <Button
             variant="outline"
             size="sm"
             onClick={handleExport}
-            className="gap-2"
+            className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
           >
             <Download className="w-4 h-4" />
-            Export
+            Export Map
           </Button>
         </Panel>
-        <Panel position="bottom-left" className="bg-card p-3 rounded-lg shadow-md m-2 max-w-sm space-y-2">
-          <p className="text-xs text-muted-foreground">
-            💡 <strong>Tip:</strong> Click nodes for details and resources. Drag to explore!
+        <Panel position="bottom-left" className="bg-card/95 backdrop-blur-sm p-4 rounded-lg shadow-elegant border border-border m-2 max-w-sm space-y-3">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            💡 <strong className="text-foreground">Interactive Tips:</strong> Click nodes to reveal details and resources. Drag to pan, scroll to zoom!
           </p>
-          <div className="flex gap-2 text-xs">
-            <span className="font-semibold text-foreground">Priority:</span>
-            <span>🔴 Essential</span>
-            <span>🟡 Recommended</span>
-            <span>🟢 Optional</span>
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-foreground">Priority Levels:</p>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="px-2 py-1 rounded bg-destructive/10 text-destructive border border-destructive/20">🔴 Essential</span>
+              <span className="px-2 py-1 rounded bg-primary/10 text-primary border border-primary/20">🟡 Recommended</span>
+              <span className="px-2 py-1 rounded bg-green-500/10 text-green-600 border border-green-500/20">🟢 Optional</span>
+            </div>
           </div>
         </Panel>
       </ReactFlow>
